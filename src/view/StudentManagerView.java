@@ -307,8 +307,13 @@ public class StudentManagerView extends JFrame {
 		studentIdFilter.setBounds(314, 20, 124, 36);
 		contentPane.add(studentIdFilter);
 		studentIdFilter.setColumns(10);
+
+		for (Student student : this.model.getListStudent()) {
+			this.insertStudentInTable(student);
+		}
 	}
 
+	/* Function */
 	public void deleteForm() {
 		textField_Id.setText("");
 		textField_Name.setText("");
@@ -324,7 +329,7 @@ public class StudentManagerView extends JFrame {
 		DefaultTableModel model_table = (DefaultTableModel) table.getModel();
 		model_table.addRow(new Object[] { student.getStudentId() + "", student.getStudentName(),
 				student.getBirthPlace().getProvinceName(),
-				new SimpleDateFormat("dd/MM/yyyy").format(student.getDateOfBirth()),
+				new SimpleDateFormat("yyyy-MM-dd").format(student.getDateOfBirth()),
 				(student.isSex() ? "Male" : "Female"), student.getSubject1() + "", student.getSubject2() + "",
 				student.getSubject3() + "",
 
@@ -340,17 +345,17 @@ public class StudentManagerView extends JFrame {
 				table.revalidate();
 				this.insertStudentInTable(student);
 			} else {
-				this.model.update(student);
 				int soLuongDong = model_table.getRowCount();
 				System.out.println(soLuongDong);
 				if (soLuongDong > 0) {
 					for (int i = 0; i < soLuongDong; i++) {
 						String id = model_table.getValueAt(i, 0) + "";
 						if (id.equals(student.getStudentId() + "")) {
+							this.model.update(i, student);
 							model_table.setValueAt(student.getStudentId() + "", i, 0);
 							model_table.setValueAt(student.getStudentName() + "", i, 1);
 							model_table.setValueAt(student.getBirthPlace().getProvinceName() + "", i, 2);
-							model_table.setValueAt(new SimpleDateFormat("dd/MM/yyyy").format(student.getDateOfBirth()),
+							model_table.setValueAt(new SimpleDateFormat("yyyy-MM-dd").format(student.getDateOfBirth()),
 									i, 3);
 							model_table.setValueAt(student.isSex() ? "Male" : "Female", i, 4);
 							model_table.setValueAt(student.getSubject1() + "", i, 5);
@@ -372,7 +377,7 @@ public class StudentManagerView extends JFrame {
 		String studentName = this.textField_Name.getText();
 		int provinceId = this.comboBox_form.getSelectedIndex();
 		Province province = Province.getProvinceById(provinceId);
-		Date dateOfBirth = new SimpleDateFormat("dd/MM/yyyy").parse(this.textField_Date.getText());
+		Date dateOfBirth = new SimpleDateFormat("yyyy-MM-dd").parse(this.textField_Date.getText());
 		boolean sex = this.radioButton_Male.isSelected();
 		float subject1 = Float.parseFloat(this.textField_subject1.getText());
 		float subject2 = Float.parseFloat(this.textField_subject2.getText());
@@ -400,7 +405,13 @@ public class StudentManagerView extends JFrame {
 		String studentName = model_table.getValueAt(i_row, 1) + "";
 		Province province = Province.getProvinceByName(model_table.getValueAt(i_row, 2) + "");
 		String dateOfBirthStr = model_table.getValueAt(i_row, 3) + "";
-		Date dateOfBirth = new Date(dateOfBirthStr);
+		Date dateOfBirth = null;
+		try {
+			dateOfBirth = new SimpleDateFormat("yyyy-MM-dd").parse(dateOfBirthStr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String textSex = model_table.getValueAt(i_row, 4) + "";
 		boolean isSex = textSex.equals("Male");
 		float subject1 = Float.valueOf(model_table.getValueAt(i_row, 5) + "");
@@ -417,7 +428,7 @@ public class StudentManagerView extends JFrame {
 		this.textField_Id.setText(student.getStudentId() + "");
 		this.textField_Name.setText(student.getStudentName() + "");
 		this.comboBox_form.setSelectedItem(student.getBirthPlace().getProvinceName());
-		String date = new SimpleDateFormat("dd/MM/yyyy").format(student.getDateOfBirth());
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(student.getDateOfBirth());
 		this.textField_Date.setText(date);
 		if (student.isSex()) {
 			this.radioButton_Male.setSelected(true);
@@ -448,9 +459,27 @@ public class StudentManagerView extends JFrame {
 		List<Integer> list = new ArrayList<Integer>();
 		int soLuongDong = model_table.getRowCount();
 		for (int i = soLuongDong - 1; i >= 0; i--) {
-			if (((birthPlaceFilter > 0) && (!model_table.getValueAt(i, 2)
-					.equals(Province.getProvinceById(birthPlaceFilter).getProvinceName())))
-					|| ((Integer.valueOf(studentId) > 0) && (!studentId.equals(model_table.getValueAt(i, 0))))) {
+			boolean removeRow = false;
+
+			if (birthPlaceFilter > 0 && !model_table.getValueAt(i, 2)
+					.equals(Province.getProvinceById(birthPlaceFilter).getProvinceName())) {
+				removeRow = true;
+			} else {
+				try {
+					// Only parse and check the studentId if it's not empty
+					if (!studentId.isEmpty()) {
+						int parsedStudentId = Integer.parseInt(studentId);
+						if (!studentId.equals(model_table.getValueAt(i, 0).toString())) {
+							removeRow = true;
+						}
+					}
+				} catch (NumberFormatException e) {
+					// Handle the case where studentId is not an integer
+					// Maybe log an error, inform the user, or ignore this filter condition
+				}
+			}
+
+			if (removeRow) {
 				list.add(i);
 			}
 		}

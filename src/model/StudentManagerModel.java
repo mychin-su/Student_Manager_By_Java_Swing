@@ -2,8 +2,10 @@ package model;
 
 import java.util.ArrayList;
 
+import dao.StudentManagerDao;
+
 public class StudentManagerModel {
-	private ArrayList<Student> listStudent;
+	public ArrayList<Student> listStudent;
 	private String fileName;
 
 	public StudentManagerModel(ArrayList<Student> listStudent) {
@@ -11,7 +13,7 @@ public class StudentManagerModel {
 	}
 
 	public StudentManagerModel() {
-		this.listStudent = new ArrayList<Student>();
+		this.listStudent = StudentManagerDao.getInstance().selectAll();
 		this.fileName = "";
 	}
 
@@ -33,15 +35,17 @@ public class StudentManagerModel {
 
 	public void insert(Student student) {
 		this.listStudent.add(student);
+		StudentManagerDao.getInstance().insert(student);
 	}
 
 	public void delete(Student student) {
 		this.listStudent.remove(student);
+		StudentManagerDao.getInstance().delete(student);
 	}
 
-	public void update(Student student) {
-		this.listStudent.remove(student);
-		this.listStudent.add(student);
+	public void update(int i, Student student) {
+		this.listStudent.set(i, student);
+		StudentManagerDao.getInstance().update(student);
 	}
 
 	public boolean kiemTraTonTai(Student student) {

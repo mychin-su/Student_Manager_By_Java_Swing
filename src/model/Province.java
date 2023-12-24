@@ -11,6 +11,10 @@ public class Province {
 		ProvinceName = provinceName;
 	}
 
+	public Province(String ProvinceName) {
+		this.ProvinceName = ProvinceName;
+	}
+
 	public int getProvinceId() {
 		return ProvinceId;
 	}
