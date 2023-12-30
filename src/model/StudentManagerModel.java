@@ -43,6 +43,11 @@ public class StudentManagerModel {
 		StudentManagerDao.getInstance().delete(student);
 	}
 
+	public void deleteAll() {
+		this.listStudent.clear();
+		StudentManagerDao.getInstance().deleteAll();
+	}
+
 	public void update(int i, Student student) {
 		this.listStudent.set(i, student);
 		StudentManagerDao.getInstance().update(student);

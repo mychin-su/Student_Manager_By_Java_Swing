@@ -2,13 +2,14 @@ package model;
 
 import java.util.Date;
 
-public class Student {
+public class Student implements Comparable<Student> {
 	private int studentId;
 	private String studentName;
 	private Province birthPlace;
 	private Date dateOfBirth;
 	private boolean sex;
 	private float subject1, subject2, subject3;
+	private double avgMark;
 
 	public Student() {
 	}
@@ -23,6 +24,7 @@ public class Student {
 		this.subject1 = subject1;
 		this.subject2 = subject2;
 		this.subject3 = subject3;
+		this.avgMark = (subject1 + subject2 + subject3) / 3;
 	}
 
 	public Province getBirthPlace() {
@@ -89,17 +91,28 @@ public class Student {
 		this.subject3 = subject3;
 	}
 
+	public double getAvgMark() {
+		return avgMark;
+	}
+
+	public void setAvgMark(double avgMark) {
+		this.avgMark = avgMark;
+	}
+
 	@Override
 	public String toString() {
 		return "Student [studentId=" + studentId + ", studentName=" + studentName + ", birthPlace=" + birthPlace
 				+ ", dateOfBirth=" + dateOfBirth + ", sex=" + sex + ", subject1=" + subject1 + ", subject2=" + subject2
-				+ ", subject3=" + subject3 + "]";
+				+ ", subject3=" + subject3 + ", avgMark=" + avgMark + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(avgMark);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((birthPlace == null) ? 0 : birthPlace.hashCode());
 		result = prime * result + ((dateOfBirth == null) ? 0 : dateOfBirth.hashCode());
 		result = prime * result + (sex ? 1231 : 1237);
@@ -120,6 +133,8 @@ public class Student {
 		if (getClass() != obj.getClass())
 			return false;
 		Student other = (Student) obj;
+		if (Double.doubleToLongBits(avgMark) != Double.doubleToLongBits(other.avgMark))
+			return false;
 		if (birthPlace == null) {
 			if (other.birthPlace != null)
 				return false;
@@ -146,5 +161,10 @@ public class Student {
 		if (Float.floatToIntBits(subject3) != Float.floatToIntBits(other.subject3))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Student o) {
+		return Double.compare(this.avgMark, o.avgMark);
 	}
 }

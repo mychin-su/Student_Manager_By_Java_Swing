@@ -9,6 +9,8 @@ public interface DAOInterface<T> {
 
 	public int delete(T t);
 
+	public int deleteAll();
+
 	public ArrayList<T> selectAll();
 
 	public T selectById(T t);

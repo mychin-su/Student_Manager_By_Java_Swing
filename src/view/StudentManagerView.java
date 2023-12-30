@@ -1,9 +1,15 @@
 package view;
 
 import java.awt.Font;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +17,7 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -31,6 +38,8 @@ import controller.StudentManagerListener;
 import model.Province;
 import model.Student;
 import model.StudentManagerModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class StudentManagerView extends JFrame {
 
@@ -63,6 +72,8 @@ public class StudentManagerView extends JFrame {
 	private JTextField textField_Date;
 	private DefaultTableModel model_table;
 	private JTextField studentIdFilter;
+	private JButton btn_Update_1;
+	private JButton btn_DeleteAll;
 
 	public StudentManagerView() {
 		this.model = new StudentManagerModel();
@@ -100,6 +111,7 @@ public class StudentManagerView extends JFrame {
 		menuFile.add(exitFile);
 
 		JMenu mnNewMenu = new JMenu("About\r\n");
+
 		mnNewMenu.setFont(new Font("Tahoma", Font.BOLD, 15));
 		menuBar.add(mnNewMenu);
 
@@ -114,16 +126,21 @@ public class StudentManagerView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		Font titleFont = new Font("Tahoma", Font.BOLD, 12);
+
 		Box studentFilter = Box.createVerticalBox();
-		studentFilter.setBorder(
-				new TitledBorder(null, "Student Filter", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		studentFilter.setBounds(0, 10, 678, 54);
+		TitledBorder titledBorders = new TitledBorder("Student Filter");
+		titledBorders.setTitleJustification(TitledBorder.LEADING);
+		titledBorders.setTitlePosition(TitledBorder.TOP);
+		titledBorders.setTitleFont(titleFont);
+		studentFilter.setBorder(titledBorders);
+		studentFilter.setBounds(457, 552, 678, 54);
 		contentPane.add(studentFilter);
 
 		jCombo_box_BirthPlace = new JComboBox<String>();
 		ArrayList<Province> listProvince = Province.getListProvince();
 
-		jCombo_box_BirthPlace.setBounds(100, 20, 122, 36);
+		jCombo_box_BirthPlace.setBounds(100, 20, 110, 36);
 		jCombo_box_BirthPlace.setFont(new Font("Tahoma", Font.BOLD, 10));
 		contentPane.add(jCombo_box_BirthPlace);
 		for (Province province : listProvince) {
@@ -132,19 +149,19 @@ public class StudentManagerView extends JFrame {
 
 		JLabel jLabelStudentId = new JLabel("StudentId");
 		jLabelStudentId.setFont(new Font("Tahoma", Font.BOLD, 15));
-		jLabelStudentId.setBounds(232, 22, 84, 29);
+		jLabelStudentId.setBounds(220, 22, 84, 29);
 		contentPane.add(jLabelStudentId);
 
 		filter = new JButton("Filter");
 		filter.addActionListener(action);
 		filter.setFont(new Font("Tahoma", Font.BOLD, 15));
-		filter.setBounds(448, 18, 104, 36);
+		filter.setBounds(402, 20, 84, 36);
 		contentPane.add(filter);
 
 		cancelFilter = new JButton("CancelF");
 		cancelFilter.addActionListener(action);
 		cancelFilter.setFont(new Font("Tahoma", Font.BOLD, 15));
-		cancelFilter.setBounds(570, 18, 104, 36);
+		cancelFilter.setBounds(484, 20, 104, 36);
 		contentPane.add(cancelFilter);
 
 		JLabel jLableBirthPlace = new JLabel("BirthPlace");
@@ -153,24 +170,32 @@ public class StudentManagerView extends JFrame {
 		jLableBirthPlace.setFont(new Font("Tahoma", Font.BOLD, 15));
 
 		Box list_Student = Box.createVerticalBox();
-		list_Student
-				.setBorder(new TitledBorder(null, "List Student", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		TitledBorder titledBorder = new TitledBorder("List Student");
+		titledBorder.setTitleJustification(TitledBorder.LEADING);
+		titledBorder.setTitlePosition(TitledBorder.TOP);
+		titledBorder.setTitleFont(titleFont);
+		list_Student.setBorder(titledBorder);
 		list_Student.setBounds(12, 84, 662, 226);
 		contentPane.add(list_Student);
 
 		table = new JTable();
 		model_table = (DefaultTableModel) table.getModel();
-		table.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] { "Id", "Name", "Place", "DateOfBirth", "Sex", "Subject1", "Subject2", "Subject3" }));
+		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Id", "Name", "Place", "DateOfBirth",
+				"Sex", "Subject1", "Subject2", "Subject3", "Average" }));
 		table.setRowHeight(25);
 		table.setFont(new Font("Tahoma", Font.BOLD, 13));
+		Font headerFont = new Font("Tahoma", Font.BOLD, 13);
+		table.getTableHeader().setFont(headerFont);
 		JScrollPane scrollPane = new JScrollPane(table);
 		list_Student.add(scrollPane);
 
 		Box verticalBox = Box.createVerticalBox();
-		verticalBox.setBorder(
-				new TitledBorder(null, "Student Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		verticalBox.setBounds(12, 309, 656, 199);
+		TitledBorder titledBorde = new TitledBorder("Student Information");
+		titledBorde.setTitleJustification(TitledBorder.LEADING);
+		titledBorde.setTitlePosition(TitledBorder.TOP);
+		titledBorde.setTitleFont(titleFont);
+		verticalBox.setBorder(titledBorde);
+		verticalBox.setBounds(12, 308, 656, 199);
 		contentPane.add(verticalBox);
 
 		JLabel lblNewLabel = new JLabel("ID");
@@ -179,8 +204,8 @@ public class StudentManagerView extends JFrame {
 		contentPane.add(lblNewLabel);
 
 		textField_Id = new JTextField();
-		textField_Id.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		textField_Id.setBounds(114, 320, 139, 29);
+		textField_Id.setFont(new Font("Tahoma", Font.BOLD, 13));
+		textField_Id.setBounds(114, 329, 139, 29);
 		contentPane.add(textField_Id);
 		textField_Id.setColumns(10);
 
@@ -195,7 +220,7 @@ public class StudentManagerView extends JFrame {
 		contentPane.add(lblNewLabel_1_1);
 
 		textField_Name = new JTextField();
-		textField_Name.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		textField_Name.setFont(new Font("Tahoma", Font.BOLD, 13));
 		textField_Name.setBounds(114, 369, 139, 31);
 		contentPane.add(textField_Name);
 		textField_Name.setColumns(10);
@@ -276,37 +301,50 @@ public class StudentManagerView extends JFrame {
 		btn_Insert = new JButton("Insert");
 		btn_Insert.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btn_Insert.addActionListener(action);
-		btn_Insert.setBounds(20, 517, 104, 29);
+		btn_Insert.setBounds(12, 517, 104, 29);
 		contentPane.add(btn_Insert);
 
 		btn_Delete = new JButton("Delete");
 		btn_Delete.addActionListener(action);
 		btn_Delete.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btn_Delete.setBounds(162, 517, 104, 29);
+		btn_Delete.setBounds(118, 518, 104, 29);
 		contentPane.add(btn_Delete);
 
 		btn_Update = new JButton("Update");
 		btn_Update.addActionListener(action);
 		btn_Update.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btn_Update.setBounds(299, 517, 104, 29);
+		btn_Update.setBounds(232, 517, 104, 29);
 		contentPane.add(btn_Update);
 
 		btn_Save = new JButton("Save");
 		btn_Save.addActionListener(action);
 		btn_Save.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btn_Save.setBounds(448, 517, 104, 29);
+		btn_Save.setBounds(346, 518, 104, 29);
 		contentPane.add(btn_Save);
 
 		btn_Cancel = new JButton("Cancel");
 		btn_Cancel.addActionListener(action);
 		btn_Cancel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btn_Cancel.setBounds(570, 517, 104, 29);
+		btn_Cancel.setBounds(468, 517, 104, 29);
 		contentPane.add(btn_Cancel);
 
 		studentIdFilter = new JTextField();
-		studentIdFilter.setBounds(314, 20, 124, 36);
+		studentIdFilter.setFont(new Font("Tahoma", Font.BOLD, 13));
+		studentIdFilter.setBounds(314, 20, 78, 36);
 		contentPane.add(studentIdFilter);
 		studentIdFilter.setColumns(10);
+
+		btn_DeleteAll = new JButton("DeleteAll");
+		btn_DeleteAll.addActionListener(action);
+		btn_DeleteAll.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btn_DeleteAll.setBounds(582, 517, 104, 29);
+		contentPane.add(btn_DeleteAll);
+
+		JButton filterAvg = new JButton("FilterAvg");
+		filterAvg.addActionListener(action);
+		filterAvg.setFont(new Font("Tahoma", Font.BOLD, 13));
+		filterAvg.setBounds(582, 19, 104, 36);
+		contentPane.add(filterAvg);
 
 		for (Student student : this.model.getListStudent()) {
 			this.insertStudentInTable(student);
@@ -331,9 +369,7 @@ public class StudentManagerView extends JFrame {
 				student.getBirthPlace().getProvinceName(),
 				new SimpleDateFormat("yyyy-MM-dd").format(student.getDateOfBirth()),
 				(student.isSex() ? "Male" : "Female"), student.getSubject1() + "", student.getSubject2() + "",
-				student.getSubject3() + "",
-
-		});
+				student.getSubject3() + "", student.getAvgMark() + "" });
 	}
 
 	public void insertOrUpdateStudent(Student student) {
@@ -452,7 +488,7 @@ public class StudentManagerView extends JFrame {
 	}
 
 	public void studentFilter() {
-		this.cancelStudentFilter();
+		this.LoadDataModel();
 		DefaultTableModel model_table = (DefaultTableModel) table.getModel();
 		int birthPlaceFilter = this.jCombo_box_BirthPlace.getSelectedIndex();
 		String studentId = this.studentIdFilter.getText();
@@ -488,7 +524,7 @@ public class StudentManagerView extends JFrame {
 		}
 	}
 
-	public void cancelStudentFilter() {
+	public void LoadDataModel() {
 		DefaultTableModel model_table = (DefaultTableModel) table.getModel();
 		while (model_table.getRowCount() > 0) {
 			model_table.removeRow(0);
@@ -496,5 +532,84 @@ public class StudentManagerView extends JFrame {
 		for (Student student : this.model.getListStudent()) {
 			this.insertStudentInTable(student);
 		}
+	}
+
+	public void deleteAll() {
+		DefaultTableModel model_table = (DefaultTableModel) table.getModel();
+		while (model_table.getRowCount() > 0) {
+			model_table.removeRow(0);
+		}
+		this.model.deleteAll();
+	}
+
+	public void exitProgramming() {
+		int luaChon = JOptionPane.showConfirmDialog(this, "Bạn có muốn thoát khỏi chương trình?", "Exit",
+				JOptionPane.YES_NO_OPTION);
+		if (luaChon == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
+	}
+
+	public void saveFile(String path) {
+		try {
+			this.model.setFileName(path);
+			FileOutputStream fos = new FileOutputStream(path);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			for (Student ts : this.model.getListStudent()) {
+				oos.writeObject(ts);
+			}
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void thucHienSaveFile() {
+		if (this.model.getFileName().length() > 0) {
+			saveFile(this.model.getFileName());
+		} else {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				saveFile(file.getAbsolutePath() + "");
+			}
+		}
+	}
+
+	public void openFile(File file) {
+		ArrayList ds = new ArrayList();
+		try {
+			this.model.setFileName(getName());
+			FileInputStream fis = new FileInputStream(file);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			Student ts = null;
+			while ((ts = (Student) ois.readObject()) != null) {
+				ds.add(ts);
+			}
+			ois.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		this.model.setListStudent(ds);
+	}
+
+	public void thucHienOpenFile() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			openFile(file);
+			LoadDataModel();
+		}
+	}
+
+	public void AboutMe() {
+		JOptionPane.showMessageDialog(this, "Phần mềm quản lý sinh viên <3");
+	}
+
+	public void sortByAvgMark() {
+		Collections.sort(this.model.listStudent);
+		this.LoadDataModel();
 	}
 }

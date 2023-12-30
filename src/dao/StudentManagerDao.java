@@ -13,7 +13,7 @@ import model.Student;
 
 public class StudentManagerDao implements DAOInterface<Student> {
 
-	private static final String INSERT_STUDENT_SQL = "INSERT INTO Student (Id, Name, Place, DateOfBirth, sex, subject1, subject2, subject3) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String INSERT_STUDENT_SQL = "INSERT INTO Student (Id, Name, Place, DateOfBirth, sex, subject1, subject2, subject3, average) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SELECT_ALL_STUDENTS = "SELECT * FROM Student";
 
 	public static StudentManagerDao getInstance() {
@@ -37,6 +37,7 @@ public class StudentManagerDao implements DAOInterface<Student> {
 			preparedStatement.setFloat(6, t.getSubject1());
 			preparedStatement.setFloat(7, t.getSubject2());
 			preparedStatement.setFloat(8, t.getSubject3());
+			preparedStatement.setDouble(9, t.getAvgMark());
 
 			result = preparedStatement.executeUpdate();
 
@@ -128,5 +129,21 @@ public class StudentManagerDao implements DAOInterface<Student> {
 	public ArrayList<Student> selectByCondition(String condition) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int deleteAll() {
+		int rowsAffected = 0;
+		String sql = "DELETE FROM Student";
+
+		try (Connection con = JDBCUtil.getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+
+			rowsAffected = pst.executeUpdate();
+
+			JDBCUtil.closeConnection(con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rowsAffected;
 	}
 }

@@ -32,7 +32,19 @@ public class StudentManagerListener implements ActionListener {
 		} else if (cm.equals("Filter")) {
 			this.studentManagerView.studentFilter();
 		} else if (cm.equals("CancelF")) {
-			this.studentManagerView.cancelStudentFilter();
+			this.studentManagerView.LoadDataModel();
+		} else if (cm.equals("DeleteAll")) {
+			this.studentManagerView.deleteAll();
+		} else if (cm.equals("Exit")) {
+			this.studentManagerView.exitProgramming();
+		} else if (cm.equals("SaveFile")) {
+			this.studentManagerView.thucHienSaveFile();
+		} else if (cm.equals("Open")) {
+			this.studentManagerView.thucHienOpenFile();
+		} else if (cm.equals("About Me!")) {
+			this.studentManagerView.AboutMe();
+		} else if(cm.equals("FilterAvg")) {
+			this.studentManagerView.sortByAvgMark();
 		}
 	}
 }
